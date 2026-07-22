@@ -8,10 +8,10 @@ const ASPECT = "0.5607476635514018";
 export function VslPlayer() {
   return (
     <>
-      <Script src="https://fast.wistia.com/player.js" strategy="lazyOnload" async />
+      <Script src="https://fast.wistia.com/player.js" strategy="afterInteractive" async />
       <Script
         src={`https://fast.wistia.com/embed/${MEDIA_ID}.js`}
-        strategy="lazyOnload"
+        strategy="afterInteractive"
         type="module"
       />
       <style

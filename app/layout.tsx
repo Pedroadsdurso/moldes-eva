@@ -46,6 +46,8 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${sora.variable} ${manrope.variable} h-full antialiased`}
     >
+      <link rel="preconnect" href="https://fast.wistia.com" />
+      <link rel="dns-prefetch" href="https://fast.wistia.com" />
       <body className="min-h-full flex flex-col bg-cream text-ink font-body">
         <Script id="meta-pixel" strategy="afterInteractive">
           {`!function(f,b,e,v,n,t,s)

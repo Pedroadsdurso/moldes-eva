@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { FeaturedPriceCard } from "@/components/FeaturedPriceCard";
+import { pad, useCountdown } from "@/hooks/useCountdown";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +15,16 @@ import {
 const CHECKOUT_ESSENCIAL = "https://pay.kirvano.com/b613bd9f-83b8-408f-bfb0-9d018b13fd87";
 const CHECKOUT_COMPLETO = "https://pay.kirvano.com/abc08e87-7069-483d-8c42-ee69e034c3d2";
 const CHECKOUT_COMPLETO_POPUP = "https://pay.kirvano.com/c8bda6b1-3e61-4ba4-a8f0-b5706db019b6";
+
+// Mounted fresh each time the popup opens, so the countdown restarts every time.
+function UpsellCountdown() {
+  const { minutes, seconds } = useCountdown(5);
+  return (
+    <p className="mt-1.5 font-display text-xs font-bold tabular-nums text-sunny-dark">
+      expira em {pad(minutes)}:{pad(seconds)}
+    </p>
+  );
+}
 
 export function Pricing() {
   const [upsellOpen, setUpsellOpen] = useState(false);
@@ -33,7 +44,7 @@ export function Pricing() {
       className="border-t border-white/10 bg-ink px-4 py-16 sm:py-24"
     >
       <div className="mx-auto max-w-xl text-center">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-navy/15 px-3 py-1 text-xs font-bold uppercase tracking-wide text-navy">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-sunny/15 px-3 py-1 text-xs font-bold uppercase tracking-wide text-sunny">
           <Image
             src="/images/icons/icon-relogio-real.webp"
             alt=""
@@ -143,6 +154,7 @@ Quero só o Essencial
               />
               Oferta única — só nesta tela
             </span>
+            {upsellOpen && <UpsellCountdown />}
 
             <DialogTitle className="mt-4 font-display text-2xl leading-tight font-extrabold text-navy">
               Leve o <span className="text-mint-dark">Kit Completo</span> por
@@ -190,7 +202,21 @@ Quero só o Essencial
               </li>
             </ul>
 
+            <p className="mt-3 flex items-center justify-center gap-1.5 text-[11px] font-semibold text-ink/40">
+              <Image
+                src="/images/icons/icon-escudo-mint.svg"
+                alt=""
+                width={12}
+                height={12}
+                className="h-3 w-3 flex-none"
+              />
+              Garantia de 30 dias
+            </p>
+
             <div className="mt-5 w-full rounded-2xl bg-cream-dark/50 p-4">
+              <p className="text-[11px] font-semibold text-ink/35">
+                Valor total R$ 597
+              </p>
               <p className="text-sm font-semibold text-ink/40 line-through">
                 R$ 29,90
               </p>
@@ -208,17 +234,22 @@ Quero só o Essencial
               render={<a href={CHECKOUT_COMPLETO_POPUP} />}
               nativeButton={false}
               size="lg"
-              className="h-auto w-full rounded-full bg-mint py-4 font-display text-base font-bold text-white shadow-lg shadow-mint/30 hover:bg-mint-dark"
+              className="animate-pulse-soft h-auto w-full rounded-full bg-mint py-4 font-display text-base font-bold text-white shadow-lg shadow-mint/30 hover:bg-mint-dark"
             >
               Sim, quero o Kit Completo →
             </Button>
 
-            <a
-              href={CHECKOUT_ESSENCIAL}
-              className="text-xs font-semibold text-ink/40 underline underline-offset-2 hover:text-ink/60"
-            >
-              Não, prefiro continuar só com o Essencial
-            </a>
+            <div className="flex flex-col items-center gap-1">
+              <a
+                href={CHECKOUT_ESSENCIAL}
+                className="text-xs font-semibold text-ink/40 underline underline-offset-2 hover:text-ink/60"
+              >
+                Não, prefiro continuar só com o Essencial
+              </a>
+              <p className="text-[10px] text-ink/30">
+                Você perde os 5 bônus e o Grupo VIP.
+              </p>
+            </div>
 
             <p className="text-center text-[11px] text-ink/40">
               Essa condição não aparece novamente depois que você sair desta
