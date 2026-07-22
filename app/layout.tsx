@@ -46,9 +46,29 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${sora.variable} ${manrope.variable} h-full antialiased`}
     >
-      <link rel="preconnect" href="https://fast.wistia.com" />
-      <link rel="dns-prefetch" href="https://fast.wistia.com" />
+      <link
+        rel="preload"
+        href="https://scripts.converteai.net/1f973f43-e8fe-4a19-bc6d-60ee96147f61/players/6a60412a878b892065171dc1/v4/player.js"
+        as="script"
+      />
+      <link
+        rel="preload"
+        href="https://scripts.converteai.net/lib/js/smartplayer-wc/v4/smartplayer.js"
+        as="script"
+      />
+      <link
+        rel="preload"
+        href="https://cdn.converteai.net/1f973f43-e8fe-4a19-bc6d-60ee96147f61/6a604124c965ea774c37226e/main.m3u8"
+        as="fetch"
+      />
+      <link rel="dns-prefetch" href="https://cdn.converteai.net" />
+      <link rel="dns-prefetch" href="https://scripts.converteai.net" />
+      <link rel="dns-prefetch" href="https://images.converteai.net" />
+      <link rel="dns-prefetch" href="https://license.vturb.com" />
       <body className="min-h-full flex flex-col bg-cream text-ink font-body">
+        <Script id="vturb-timing" strategy="beforeInteractive">
+          {`!function(i,n){i._plt=i._plt||(n&&n.timeOrigin?n.timeOrigin+n.now():Date.now())}(window,performance);`}
+        </Script>
         <Script id="meta-pixel" strategy="afterInteractive">
           {`!function(f,b,e,v,n,t,s)
           {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
