@@ -207,40 +207,6 @@
   background-size: 22px 22px;
 }
 
-/* Before/after drag slider */
-.ba-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  background: transparent;
-  cursor: ew-resize;
-}
-.ba-slider::-webkit-slider-runnable-track {
-  -webkit-appearance: none;
-  height: 100%;
-  background: transparent;
-}
-.ba-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  height: 100%;
-  width: 4px;
-  background: transparent;
-}
-.ba-slider::-moz-range-track {
-  height: 100%;
-  background: transparent;
-}
-.ba-slider::-moz-range-thumb {
-  height: 100%;
-  width: 4px;
-  border: none;
-  background: transparent;
-}
-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

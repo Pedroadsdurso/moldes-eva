@@ -41,7 +41,7 @@ export function SocialProofToast() {
 
   return (
     <div
-      className={`fixed bottom-4 left-4 z-40 max-w-[260px] rounded-2xl bg-white p-3 shadow-xl ring-1 ring-ink/10 transition-all duration-500 ${
+      className={`fixed bottom-20 left-4 z-40 max-w-[260px] rounded-2xl bg-white p-3 shadow-xl ring-1 ring-ink/10 transition-all duration-500 md:bottom-4 ${
         visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
       }`}
       role="status"

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +25,54 @@ const WITH = [
 export function MentalTrigger() {
   const [value, setValue] = useState(50);
   const [tab, setTab] = useState<"sem" | "com">("sem");
+  const [lastSyncedValue, setLastSyncedValue] = useState(value);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const draggingRef = useRef(false);
+
+  // Drag crossing near an edge syncs the toggle below (same setter the toggle buttons use).
+  // Left alone between the thresholds so the list content doesn't flicker mid-drag.
+  // Adjusted during render (React's recommended pattern for "derive state from a
+  // changed value with memory") instead of an effect, to skip an extra render pass.
+  if (value !== lastSyncedValue) {
+    setLastSyncedValue(value);
+    if (value <= 15) setTab("sem");
+    else if (value >= 85) setTab("com");
+  }
+
+  const selectSide = (side: "sem" | "com") => {
+    setTab(side);
+    setValue(side === "sem" ? 0 : 100);
+  };
+
+  const updateFromClientX = (clientX: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const rect = track.getBoundingClientRect();
+    const pct = ((clientX - rect.left) / rect.width) * 100;
+    setValue(Math.min(100, Math.max(0, pct)));
+  };
+
+  const handlePointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    draggingRef.current = true;
+    // Can throw if the browser no longer considers the pointer "active" by the
+    // time this runs; the drag still works via move events, so don't let it block.
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {}
+    updateFromClientX(e.clientX);
+  };
+
+  const handlePointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!draggingRef.current) return;
+    updateFromClientX(e.clientX);
+  };
+
+  const handlePointerUp = (e: ReactPointerEvent<HTMLDivElement>) => {
+    draggingRef.current = false;
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {}
+  };
 
   return (
     <section className="border-t border-ink/10 bg-cream-dark/40 px-4 py-16 sm:py-24">
@@ -36,7 +85,14 @@ export function MentalTrigger() {
         <p className="mt-3 text-ink/60">Arraste o traço pra focar em cada lado da transformação.</p>
       </div>
 
-      <div className="relative mx-auto mt-8 w-full max-w-3xl select-none overflow-hidden rounded-3xl shadow-xl aspect-[1672/941]">
+      <div
+        ref={trackRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        className="relative mx-auto mt-8 w-full max-w-3xl cursor-ew-resize touch-none select-none overflow-hidden rounded-3xl shadow-xl aspect-[1672/941]"
+      >
         <Image
           src="/images/antes-depois/antes-depois.webp"
           alt="Antes: professora estressada desenhando molde à mão de madrugada, mesa cheia de recortes. Depois: professora sorrindo, escolhendo o molde pronto no tablet e recortando o EVA em minutos."
@@ -68,7 +124,7 @@ export function MentalTrigger() {
           value={value}
           onChange={(e) => setValue(Number(e.target.value))}
           aria-label="Arraste para focar entre antes e depois"
-          className="ba-slider"
+          className="sr-only"
         />
       </div>
 
@@ -78,7 +134,7 @@ export function MentalTrigger() {
           <div className="mx-auto flex w-fit rounded-full bg-cream-dark/60 p-1">
             <button
               type="button"
-              onClick={() => setTab("sem")}
+              onClick={() => selectSide("sem")}
               className={cn(
                 "rounded-full px-4 py-2 text-xs font-bold transition-colors duration-200",
                 tab === "sem"
@@ -90,7 +146,7 @@ export function MentalTrigger() {
             </button>
             <button
               type="button"
-              onClick={() => setTab("com")}
+              onClick={() => selectSide("com")}
               className={cn(
                 "rounded-full px-4 py-2 text-xs font-bold transition-colors duration-200",
                 tab === "com"

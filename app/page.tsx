@@ -13,6 +13,7 @@ import { FinalCTA } from "@/components/FinalCTA";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SocialProofToast } from "@/components/SocialProofToast";
 import { ExitIntentRedirect } from "@/components/ExitIntentRedirect";
+import { FloatingCTA } from "@/components/FloatingCTA";
 
 export default function Home() {
   return (
@@ -37,6 +38,7 @@ export default function Home() {
       </main>
       <SiteFooter />
       <SocialProofToast />
+      <FloatingCTA />
     </div>
   );
 }

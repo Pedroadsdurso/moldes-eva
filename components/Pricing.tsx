@@ -20,6 +20,13 @@ export function Pricing() {
 
   const handleBuyEssencial = () => setUpsellOpen(true);
 
+  const handleUpsellOpenChange = (open: boolean) => {
+    setUpsellOpen(open);
+    window.dispatchEvent(
+      new CustomEvent("upsell-dialog-change", { detail: { open } })
+    );
+  };
+
   return (
     <section
       id="precos"
@@ -123,7 +130,7 @@ Quero só o Essencial
         />
       </div>
 
-      <Dialog open={upsellOpen} onOpenChange={setUpsellOpen}>
+      <Dialog open={upsellOpen} onOpenChange={handleUpsellOpenChange}>
         <DialogContent className="sm:max-w-md">
           <div className="flex flex-col items-center pt-2 text-center">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-sunny px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-ink">
