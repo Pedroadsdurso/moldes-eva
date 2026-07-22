@@ -16,7 +16,7 @@ export function VslPlayer() {
       />
       <style
         dangerouslySetInnerHTML={{
-          __html: `wistia-player[media-id='${MEDIA_ID}']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/${MEDIA_ID}/swatch'); display: block; filter: blur(5px); padding-top:178.33%; }`,
+          __html: `wistia-player[media-id='${MEDIA_ID}'] { display: block; aspect-ratio: ${ASPECT}; } wistia-player[media-id='${MEDIA_ID}']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/${MEDIA_ID}/swatch'); filter: blur(5px); }`,
         }}
       />
       <div
