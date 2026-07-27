@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { VslPlayer } from "@/components/VslPlayer";
 
 export function Hero() {
   return (
@@ -28,22 +27,21 @@ export function Hero() {
           </h1>
         </div>
 
-        {/* Hero VSL — 3rd on mobile, right column (spanning both rows) on desktop */}
+        {/* Hero Image — 3rd on mobile, right column (spanning both rows) on desktop */}
         <div
-          className="animate-fade-in-up relative mx-auto mt-8 w-full max-w-[300px] overflow-hidden rounded-[2rem] shadow-2xl ring-4 ring-white sm:max-w-[320px] lg:col-start-2 lg:row-start-1 lg:row-end-3 lg:mx-0 lg:mt-0 lg:max-w-[380px]"
+          className="animate-fade-in-up relative mx-auto mt-8 w-full max-w-[380px] sm:max-w-[440px] lg:col-start-2 lg:row-start-1 lg:row-end-3 lg:mx-0 lg:mt-0 lg:max-w-[520px]"
           style={{ animationDelay: "200ms" }}
         >
-          <VslPlayer />
-          <span className="absolute -bottom-2 left-1/2 hidden -translate-x-1/2 rotate-[-4deg] items-center gap-1.5 whitespace-nowrap rounded-2xl bg-sunny px-4 py-2 text-sm font-bold text-ink shadow-lg sm:flex">
-            +5000 moldes prontos
+          <div className="animate-pulse-soft">
             <Image
-              src="/images/icons/icon-celebracao.svg"
-              alt=""
-              width={16}
-              height={16}
-              className="h-4 w-4 flex-none"
+              src="/images/hero-main.png"
+              alt="Kit Tia Rosi — +5000 moldes prontos de EVA com 5 super bônus"
+              width={840}
+              height={840}
+              priority
+              className="w-full h-auto drop-shadow-2xl"
             />
-          </span>
+          </div>
         </div>
 
         {/* Group B: subtitle + CTA + social proof — 4th/5th/6th on mobile, bottom-left on desktop */}
