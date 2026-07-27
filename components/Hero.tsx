@@ -34,7 +34,7 @@ export function Hero() {
         >
           <div className="animate-pulse-soft">
             <Image
-              src="/images/hero-main.png"
+              src="/images/hero-main.webp"
               alt="Kit Tia Rosi — +5000 moldes prontos de EVA com 5 super bônus"
               width={840}
               height={840}
