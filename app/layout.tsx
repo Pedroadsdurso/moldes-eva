@@ -109,33 +109,12 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Traffik Pixel */}
-        <Script id="traffik-pixel" strategy="beforeInteractive">
-          {`
-            (function(d,s){
-              s=d.createElement("script");
-              s.async=1;
-              s.src="https://342dd-virid.vercel.app/px.js";
-
-              s.setAttribute(
-                "data-cfg",
-                "cms0q2xpy000004k3d35p8hfi"
-              );
-
-              s.setAttribute(
-                "data-ic-t",
-                "contem_url"
-              );
-
-              s.setAttribute(
-                "data-ic-v",
-                "https://pay.kirvano.com/"
-              );
-
-              (d.head||d.documentElement).appendChild(s);
-            })(document);
-          `}
-        </Script>
+{/* Traffik Pixel */}
+<Script id="traffik-pixel" strategy="beforeInteractive">
+  {`
+    (function(d,s){s=d.createElement("script");s.async=1;s.src="https://342dd-virid.vercel.app/px.js";s.setAttribute("data-cfg","cms0q2xpy000004k3d35p8hfi");s.setAttribute("data-ic-t","clique_checkout");s.setAttribute("data-ic-v","https://pay.kirvano.com/");(d.head||d.documentElement).appendChild(s)})(document);
+  `}
+</Script>
       </head>
 
       <body className="min-h-full flex flex-col bg-cream text-ink font-body">
