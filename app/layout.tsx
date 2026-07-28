@@ -104,7 +104,7 @@ export default function RootLayout({
                 "data-account",
                 "cmry50c910000p4k8lenqkd8e"
               );
-              d.head.appendChild(s);
+              (d.head||d.documentElement).appendChild(s);
             })(document);
           `}
         </Script>
@@ -112,40 +112,28 @@ export default function RootLayout({
         {/* Traffik Pixel */}
         <Script id="traffik-pixel" strategy="beforeInteractive">
           {`
-            (function(w,d,c,s){
-              w.traffikPixel=w.traffikPixel||{
-                q:[],
-                track:function(){
-                  w.traffikPixel.q.push(
-                    [].slice.call(arguments)
-                  );
-                }
-              };
-
-              (w._tkpx=w._tkpx||[]).push(c);
-
-              if(w.__tkpxL){
-                return;
-              }
-
-              w.__tkpxL=1;
+            (function(d,s){
               s=d.createElement("script");
               s.async=1;
               s.src="https://342dd-virid.vercel.app/px.js";
-              d.head.appendChild(s);
-            })(
-              window,
-              document,
-              {
-                "c":"cms0q2xpy000004k3d35p8hfi",
-                "l":0,
-                "a":0,
-                "i":{
-                  "t":"contem_url",
-                  "v":"https://pay.kirvano.com/"
-                }
-              }
-            );
+
+              s.setAttribute(
+                "data-cfg",
+                "cms0q2xpy000004k3d35p8hfi"
+              );
+
+              s.setAttribute(
+                "data-ic-t",
+                "contem_url"
+              );
+
+              s.setAttribute(
+                "data-ic-v",
+                "https://pay.kirvano.com/"
+              );
+
+              (d.head||d.documentElement).appendChild(s);
+            })(document);
           `}
         </Script>
       </head>
