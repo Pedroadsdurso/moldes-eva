@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Sora, Manrope } from "next/font/google";
+import { Manrope, Sora } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
@@ -72,6 +72,14 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://images.converteai.net" />
         <link rel="dns-prefetch" href="https://license.vturb.com" />
 
+        {/* Antecipação da conexão com a Traffik */}
+        <link rel="dns-prefetch" href="https://342dd-virid.vercel.app" />
+        <link
+          rel="preconnect"
+          href="https://342dd-virid.vercel.app"
+          crossOrigin="anonymous"
+        />
+
         {/* Temporização da Vturb */}
         <Script id="vturb-timing" strategy="beforeInteractive">
           {`
@@ -84,542 +92,66 @@ export default function RootLayout({
             }(window,performance);
           `}
         </Script>
+
+        {/* Traffik — rastreamento de UTMs */}
+        <Script id="traffik-tracking" strategy="beforeInteractive">
+          {`
+            (function(d,s){
+              s=d.createElement("script");
+              s.async=1;
+              s.src="https://342dd-virid.vercel.app/t.js";
+              s.setAttribute(
+                "data-account",
+                "cmry50c910000p4k8lenqkd8e"
+              );
+              d.head.appendChild(s);
+            })(document);
+          `}
+        </Script>
+
+        {/* Traffik Pixel */}
+        <Script id="traffik-pixel" strategy="beforeInteractive">
+          {`
+            (function(w,d,c,s){
+              w.traffikPixel=w.traffikPixel||{
+                q:[],
+                track:function(){
+                  w.traffikPixel.q.push(
+                    [].slice.call(arguments)
+                  );
+                }
+              };
+
+              (w._tkpx=w._tkpx||[]).push(c);
+
+              if(w.__tkpxL){
+                return;
+              }
+
+              w.__tkpxL=1;
+              s=d.createElement("script");
+              s.async=1;
+              s.src="https://342dd-virid.vercel.app/px.js";
+              d.head.appendChild(s);
+            })(
+              window,
+              document,
+              {
+                "c":"cms0q2xpy000004k3d35p8hfi",
+                "l":0,
+                "a":0,
+                "i":{
+                  "t":"contem_url",
+                  "v":"https://pay.kirvano.com/"
+                }
+              }
+            );
+          `}
+        </Script>
       </head>
 
       <body className="min-h-full flex flex-col bg-cream text-ink font-body">
-        {/* Captura e propagação de UTMs da Traffik */}
-        <Script id="traffik-tracking" strategy="afterInteractive">
-          {`
-            (function () {
-              "use strict";
-
-              var ACCOUNT = "cmry50c910000p4k8lenqkd8e";
-              var API = "https://342dd-virid.vercel.app";
-              var COOKIE = "traffik_track";
-              var SESSION = "traffik_session";
-              var DAYS = 30;
-
-              var UTM = [
-                "utm_source",
-                "utm_medium",
-                "utm_campaign",
-                "utm_content",
-                "utm_term"
-              ];
-
-              var IDS = [
-                "fbclid",
-                "gclid",
-                "ttclid"
-              ];
-
-              var CHECKOUT = [
-                "hotmart",
-                "kirvano",
-                "cartpanda",
-                "kiwify",
-                "monetizze",
-                "pay.",
-                "checkout"
-              ];
-
-              function readCookie(name) {
-                var match = document.cookie.match(
-                  "(^|;)\\\\s*" + name + "\\\\s*=\\\\s*([^;]+)"
-                );
-
-                return match
-                  ? decodeURIComponent(match.pop())
-                  : null;
-              }
-
-              function writeCookie(name, value, days) {
-                var expires = new Date(
-                  Date.now() + days * 864e5
-                ).toUTCString();
-
-                document.cookie =
-                  name +
-                  "=" +
-                  encodeURIComponent(value) +
-                  ";expires=" +
-                  expires +
-                  ";path=/;SameSite=Lax";
-              }
-
-              function stored() {
-                try {
-                  return JSON.parse(
-                    readCookie(COOKIE) || "{}"
-                  );
-                } catch (error) {
-                  return {};
-                }
-              }
-
-              function merge(first, second) {
-                var result = {};
-                var key;
-
-                for (key in first) {
-                  result[key] = first[key];
-                }
-
-                for (key in second) {
-                  result[key] = second[key];
-                }
-
-                return result;
-              }
-
-              function fromUrl() {
-                var result = {};
-                var query = new URLSearchParams(
-                  window.location.search
-                );
-
-                UTM.concat(IDS).forEach(function (key) {
-                  var value = query.get(key);
-
-                  if (value) {
-                    result[key] = value;
-                  }
-                });
-
-                return result;
-              }
-
-              var fresh = fromUrl();
-              var hasFreshData =
-                Object.keys(fresh).length > 0;
-
-              var data = hasFreshData
-                ? merge(stored(), fresh)
-                : stored();
-
-              if (
-                hasFreshData ||
-                !readCookie(COOKIE)
-              ) {
-                writeCookie(
-                  COOKIE,
-                  JSON.stringify(data),
-                  DAYS
-                );
-              }
-
-              window.traffik =
-                window.traffik || {};
-
-              window.traffik.getData =
-                function () {
-                  return merge(stored(), {
-                    account: ACCOUNT
-                  });
-                };
-
-              window.traffik.data = data;
-
-              function decorate() {
-                var parameters = [];
-
-                UTM.concat(IDS).forEach(
-                  function (key) {
-                    if (data[key]) {
-                      parameters.push(
-                        key +
-                          "=" +
-                          encodeURIComponent(data[key])
-                      );
-                    }
-                  }
-                );
-
-                if (data.click_id) {
-                  parameters.push(
-                    "click_id=" +
-                      encodeURIComponent(
-                        data.click_id
-                      )
-                  );
-                }
-
-                if (!parameters.length) {
-                  return;
-                }
-
-                var links =
-                  document.getElementsByTagName("a");
-
-                for (
-                  var index = 0;
-                  index < links.length;
-                  index++
-                ) {
-                  var href =
-                    links[index].getAttribute("href") ||
-                    "";
-
-                  var isCheckout = CHECKOUT.some(
-                    function (domain) {
-                      return (
-                        href.indexOf(domain) > -1
-                      );
-                    }
-                  );
-
-                  if (!isCheckout) {
-                    continue;
-                  }
-
-                  /*
-                   * Evita adicionar os mesmos parâmetros
-                   * várias vezes ao mesmo link.
-                   */
-                  if (
-                    links[index].getAttribute(
-                      "data-traffik-decorated"
-                    ) === "true"
-                  ) {
-                    continue;
-                  }
-
-                  links[index].href =
-                    href +
-                    (href.indexOf("?") > -1
-                      ? "&"
-                      : "?") +
-                    parameters.join("&");
-
-                  links[index].setAttribute(
-                    "data-traffik-decorated",
-                    "true"
-                  );
-                }
-              }
-
-              function send() {
-                if (
-                  sessionStorage.getItem(SESSION)
-                ) {
-                  decorate();
-                  return;
-                }
-
-                var payload = merge(data, {
-                  account: ACCOUNT,
-                  url: window.location.href,
-                  referrer:
-                    document.referrer || null
-                });
-
-                var endpoint =
-                  API + "/api/track/click";
-
-                function done(clickId) {
-                  if (clickId) {
-                    data.click_id = clickId;
-
-                    writeCookie(
-                      COOKIE,
-                      JSON.stringify(data),
-                      DAYS
-                    );
-
-                    window.traffik.data = data;
-                  }
-
-                  sessionStorage.setItem(
-                    SESSION,
-                    "1"
-                  );
-
-                  decorate();
-                }
-
-                if (
-                  typeof window.fetch ===
-                  "function"
-                ) {
-                  fetch(endpoint, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "text/plain"
-                    },
-                    body: JSON.stringify(payload),
-                    keepalive: true,
-                    mode: "cors"
-                  })
-                    .then(function (response) {
-                      return response.ok
-                        ? response.json()
-                        : null;
-                    })
-                    .then(function (response) {
-                      done(
-                        response &&
-                          response.click_id
-                      );
-                    })
-                    .catch(function () {
-                      if (
-                        navigator.sendBeacon
-                      ) {
-                        navigator.sendBeacon(
-                          endpoint,
-                          JSON.stringify(payload)
-                        );
-                      }
-
-                      done(null);
-                    });
-                } else if (
-                  navigator.sendBeacon
-                ) {
-                  navigator.sendBeacon(
-                    endpoint,
-                    JSON.stringify(payload)
-                  );
-
-                  done(null);
-                } else {
-                  decorate();
-                }
-              }
-
-              if (
-                document.readyState ===
-                  "complete" ||
-                document.readyState ===
-                  "interactive"
-              ) {
-                send();
-              } else {
-                window.addEventListener(
-                  "DOMContentLoaded",
-                  send
-                );
-              }
-
-              /*
-               * Também decora links adicionados
-               * posteriormente pelo React.
-               */
-              window.addEventListener(
-                "load",
-                decorate
-              );
-            })();
-          `}
-        </Script>
-
-        {/* Pixel de eventos da Traffik */}
-        <Script id="traffik-pixel" strategy="afterInteractive">
-          {`
-            (function () {
-              "use strict";
-
-              var CONFIG =
-                "cms0q2xpy000004k3d35p8hfi";
-
-              var API =
-                "https://342dd-virid.vercel.app";
-
-              var LEAD = false;
-              var ADD_TO_CART = false;
-
-              function getFbclid() {
-                try {
-                  if (
-                    window.traffik &&
-                    typeof window.traffik
-                      .getData === "function"
-                  ) {
-                    var traffikData =
-                      window.traffik.getData();
-
-                    if (
-                      traffikData &&
-                      traffikData.fbclid
-                    ) {
-                      return traffikData.fbclid;
-                    }
-                  }
-
-                  var cookie =
-                    document.cookie.match(
-                      /traffik_track\\s*=\\s*([^;]+)/
-                    );
-
-                  if (cookie) {
-                    var parsed = JSON.parse(
-                      decodeURIComponent(cookie[1])
-                    );
-
-                    if (parsed.fbclid) {
-                      return parsed.fbclid;
-                    }
-                  }
-
-                  var query =
-                    new URLSearchParams(
-                      window.location.search
-                    );
-
-                  return query.get("fbclid");
-                } catch (error) {
-                  return null;
-                }
-              }
-
-              function eventId(name) {
-                return (
-                  name +
-                  "-" +
-                  Date.now() +
-                  "-" +
-                  Math.random()
-                    .toString(36)
-                    .slice(2, 8)
-                );
-              }
-
-              function track(eventName, extra) {
-                var payload = {
-                  pixelConfigId: CONFIG,
-                  event: eventName,
-                  eventId: eventId(eventName),
-                  url: window.location.href,
-                  fbclid: getFbclid()
-                };
-
-                if (extra) {
-                  for (var key in extra) {
-                    payload[key] = extra[key];
-                  }
-                }
-
-                try {
-                  fetch(
-                    API + "/api/pixel/event",
-                    {
-                      method: "POST",
-                      headers: {
-                        "Content-Type":
-                          "text/plain"
-                      },
-                      body: JSON.stringify(
-                        payload
-                      ),
-                      keepalive: true,
-                      mode: "cors"
-                    }
-                  ).catch(function () {});
-                } catch (error) {}
-              }
-
-              window.traffikPixel = {
-                track: track
-              };
-
-              /*
-               * O PageView do Pixel Traffik
-               * é disparado ao carregar a página.
-               */
-              track("PageView");
-
-              if (LEAD) {
-                document.addEventListener(
-                  "submit",
-                  function () {
-                    track("Lead");
-                  },
-                  true
-                );
-              }
-
-              if (ADD_TO_CART) {
-                document.addEventListener(
-                  "click",
-                  function (event) {
-                    var element = event.target;
-
-                    while (
-                      element &&
-                      element !== document.body
-                    ) {
-                      var text = (
-                        element.textContent || ""
-                      ).toLowerCase();
-
-                      var identification =
-                        (element.className || "") +
-                        " " +
-                        (element.id || "");
-
-                      if (
-                        /adicionar ao carrinho|add to cart|comprar/.test(
-                          text
-                        ) ||
-                        /cart|carrinho/i.test(
-                          identification
-                        )
-                      ) {
-                        track("AddToCart");
-                        return;
-                      }
-
-                      element =
-                        element.parentElement;
-                    }
-                  },
-                  true
-                );
-              }
-
-              /*
-               * Dispara InitiateCheckout
-               * antes de abrir a Kirvano.
-               */
-              document.addEventListener(
-                "click",
-                function (event) {
-                  var target = event.target;
-
-                  if (
-                    !target ||
-                    typeof target.closest !==
-                      "function"
-                  ) {
-                    return;
-                  }
-
-                  var link =
-                    target.closest("a");
-
-                  if (!link) {
-                    return;
-                  }
-
-                  var href =
-                    link.getAttribute("href") ||
-                    "";
-
-                  if (
-                    href.indexOf(
-                      "pay.kirvano.com"
-                    ) > -1
-                  ) {
-                    track("InitiateCheckout");
-                  }
-                },
-                true
-              );
-            })();
-          `}
-        </Script>
-
-        {/* Novo Meta Pixel */}
+        {/* Meta Pixel */}
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
             !function(f,b,e,v,n,t,s) {
@@ -627,10 +159,7 @@ export default function RootLayout({
 
               n = f.fbq = function() {
                 n.callMethod
-                  ? n.callMethod.apply(
-                      n,
-                      arguments
-                    )
+                  ? n.callMethod.apply(n, arguments)
                   : n.queue.push(arguments);
               };
 
@@ -656,15 +185,8 @@ export default function RootLayout({
               "https://connect.facebook.net/en_US/fbevents.js"
             );
 
-            fbq(
-              "init",
-              "1670059901792480"
-            );
-
-            fbq(
-              "track",
-              "PageView"
-            );
+            fbq("init", "1670059901792480");
+            fbq("track", "PageView");
           `}
         </Script>
 
