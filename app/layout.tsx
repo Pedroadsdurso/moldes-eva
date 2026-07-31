@@ -170,6 +170,10 @@ export default function RootLayout({
   // o POST para nós continua, porque o funil e o Dashboard contam do nosso
   // banco e não podem perder uma etapa por causa de uma escolha de pixel.
   var ALHEIOS = ["PageView"];
+  // O que ESTE snippet detecta, congelado no momento em que ele foi gerado.
+  // Viaja em todo evento para a gaveta poder dizer "o script instalado está
+  // desatualizado" — ver lib/pixel/detectores.ts.
+  var DET = "v1.l0.a0.iclique_checkout.v13od4wi";
 
   function fbclid() {
     try {
@@ -297,7 +301,7 @@ export default function RootLayout({
     // ⚠️ O espelho vem ANTES do payload: o estado dele viaja junto do evento, e
     // é o que permite responder "os espelhos estao saindo?" sem abrir o console.
     var espelho = espelhar(event, id);
-    var payload = { pixelConfigId: CONFIG, event: event, eventId: id, url: location.href, fbclid: fbclid(), espelho: espelho };
+    var payload = { pixelConfigId: CONFIG, event: event, eventId: id, url: location.href, fbclid: fbclid(), espelho: espelho, det: DET };
     if (extra) for (var k in extra) payload[k] = extra[k];
     enviar(payload);
   }
