@@ -101,6 +101,9 @@ export default function RootLayout({
           {String.raw`(function () {
   "use strict";
   var ACCOUNT = "cmry50c910000p4k8lenqkd8e";
+  // Área de Trabalho desta página. O servidor valida a posse; se vier vazio o
+  // clique cai na regra normal de atribuição, como nos scripts antigos.
+  var WS = "ws18de2ba42f5c4a3fad71bc7417b1e623";
   var API = "https://342dd-virid.vercel.app";
   var COOKIE = "traffik_track", SESSION = "traffik_session", DAYS = 30;
   var UTM = ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"];
@@ -133,6 +136,11 @@ export default function RootLayout({
   function send(){
     if(sessionStorage.getItem(SESSION)){decorate();return;}
     var payload=merge(data,{account:ACCOUNT,url:location.href,referrer:document.referrer||null});
+    if(WS)payload.ws=WS;
+    // Fuso do navegador: sinal GEOGRAFICO direto, mais forte que o idioma.
+    // Em try/catch porque Intl pode faltar em navegador muito antigo, e um
+    // erro aqui pararia o rastreamento inteiro por causa de um campo opcional.
+    try{payload.tz=Intl.DateTimeFormat().resolvedOptions().timeZone||null;}catch(e){}
     var ep=API+"/api/track/click";
     function done(id){if(id){data.click_id=id;writeCookie(COOKIE,JSON.stringify(data),DAYS);window.traffik.data=data;}sessionStorage.setItem(SESSION,"1");decorate();}
     if(typeof fetch==="function"){
@@ -175,11 +183,50 @@ export default function RootLayout({
     } catch (e) { return null; }
   }
 
-  function eid(name) { return name + "-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8); }
+  // Hash estável (FNV-1a) — só para derivar um id curto e reproduzível.
+  function hash(s) {
+    var h = 2166136261, i;
+    for (i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 16777619) >>> 0; }
+    return h.toString(36);
+  }
+
+  /**
+   * Id do evento — DETERMINÍSTICO.
+   *
+   * Era "nome + Date.now() + Math.random()", ou seja, um id novo a cada
+   * chamada. Isso tornava a deduplicação impossível por construção: nem o nosso
+   * servidor nem a Meta conseguiam reconhecer o mesmo evento duas vezes.
+   *
+   * Agora deriva do que identifica a AÇÃO: pixel, evento, página, visitante e
+   * uma janela de 10s. Duas cópias do script na mesma página, um reenvio, ou o
+   * mesmo clique contado duas vezes produzem o MESMO id — e viram um evento só.
+   */
+  function eid(name) {
+    return name + "-" + hash([CONFIG, name, location.href, fbclid() || "", Math.floor(Date.now() / 10000)].join("|"));
+  }
+
+  /**
+   * Espelha o evento no pixel NATIVO da Meta com o MESMO event_id.
+   *
+   * ⛔ É esta função que faz a deduplicação existir. Sem ela, o pixel do
+   * navegador manda o evento com um id dele e nós mandamos pela CAPI com o
+   * nosso — a Meta recebe dois eventos sem nada em comum e **conta os dois**,
+   * inflando o sinal que otimiza a campanha. Dinheiro real, sem erro e sem log.
+   *
+   * Só dispara quando "fbq" já existe na página: não instalamos o pixel nativo
+   * de ninguém, apenas nos alinhamos ao que já está lá.
+   */
+  function espelhar(event, id) {
+    try {
+      if (typeof window.fbq === "function") window.fbq("track", event, {}, { eventID: id });
+    } catch (e) {}
+  }
 
   function track(event, extra) {
-    var payload = { pixelConfigId: CONFIG, event: event, eventId: eid(event), url: location.href, fbclid: fbclid() };
+    var id = eid(event);
+    var payload = { pixelConfigId: CONFIG, event: event, eventId: id, url: location.href, fbclid: fbclid() };
     if (extra) for (var k in extra) payload[k] = extra[k];
+    espelhar(event, id);
     try {
       fetch(API + "/api/pixel/event", {
         method: "POST",
